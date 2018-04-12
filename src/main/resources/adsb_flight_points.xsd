@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
+
+
+    <xsd:element name="adsb_flight_points" type="FlightAwarePointType"/>
+
+    <xsd:complexType name="FlightAwarePointType">
+        <xsd:sequence>
+            <xsd:element name="hex" type="xsd:string"/>
+            <xsd:element name="squawk" type="xsd:string"/>
+            <xsd:element name="flight" type="xsd:string"/>
+            <xsd:element name="lat" type="xsd:double"/>
+            <xsd:element name="lon" type="xsd:double"/>
+            <xsd:element name="nucp" type="xsd:double"/>
+            <xsd:element name="seen_pos" type="xsd:double"/>
+            <xsd:element name="altitude" type="xsd:long"/>
+            <xsd:element name="vert_rate" type="xsd:integer"/>
+            <xsd:element name="track" type="xsd:integer"/>
+            <xsd:element name="speed" type="xsd:integer"/>
+            <xsd:element name="messages" type="xsd:integer"/>
+            <xsd:element name="seen" type="xsd:double"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="adsb_flight_tracks" type="FlightAwareTrackType"/>
+    <xsd:complexType name="FlightAwareTrackType">
+        <xsd:sequence>
+            <xsd:element name="hex" type="xsd:string"/>
+            <xsd:element name="squawk" type="xsd:string"/>
+            <xsd:element name="flight" type="xsd:string"/>
+            <xsd:element name="rssi" type="xsd:double"/>
+            <xsd:element name="flightAwarePoint" type="FlightAwarePointType" minOccurs="1" maxOccurs="unbounded"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
