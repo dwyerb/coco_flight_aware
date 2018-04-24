@@ -25,7 +25,7 @@
             flightaware
         </property>
         <property name="show_sql">true</property>
-        <property name="hibernate.hbm2ddl.auto">validate</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
         <mapping package="net.muroc"/>
         <mapping class="net.muroc.FlightAwareTrackType"/>
         <mapping class="net.muroc.FlightAwarePointType"/>

@@ -3,10 +3,18 @@ import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.hibernate.Session;
+import org.jvnet.hyperjaxb3.xml.bind.annotation.adapters.XMLGregorianCalendarAsDateTime;
+
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.joda.time.DateTime;
+
 
 import static net.muroc.coco_flight_aware.*;
 
@@ -21,12 +29,16 @@ public class PostGRES_DataWriter implements DatabaseWriter
         Transaction tx = null;
         Session session = sessionFactory.openSession();
         List<FlightAwareTrackType> fatList = session.createCriteria(FlightAwareTrackType.class).list();
+        ///get time
+        XMLGregorianCalendar currentXMLTime = dateTimeToXMLGregorianCalendar(DateTime.now());
         try {
             tx = session.beginTransaction();
             for (FlightAwarePointType point: FAPoints)
             {
                 if (point.getHex()!=null && point.getFlight()!=null && point.getSquawk()!=null)
                 {
+                    //set current timestamp
+                    point.setTimestamp(currentXMLTime);
                     //SearchCriteria search = SearchCriteria.getInstance(point.getHex(),point.getFlight(),point.getSquawk());
                     //List<FlightAwareTrackType> selectedTracks = fatList.stream().filter(search.getCriteria("allFlights")).forEach(FlightAwareTrackType::setFlightAwarePoint(point));
                     //List<FlightAwareTrackType> testSelect = fatList.stream()
@@ -43,6 +55,7 @@ public class PostGRES_DataWriter implements DatabaseWriter
                         flightAwareTrackType.setSquawk(point.getSquawk());
                         flightAwareTrackType.setHex(point.getHex());
                         flightAwareTrackType.setFlight(point.getFlight());
+                        flightAwareTrackType.setTimestamp(currentXMLTime);
                         List<FlightAwarePointType> trackPointList = new ArrayList<FlightAwarePointType>();
                         flightAwareTrackType.setFlightAwarePoint(trackPointList);
                         flightAwareTrackType.flightAwarePoint.add(point);
@@ -65,6 +78,7 @@ public class PostGRES_DataWriter implements DatabaseWriter
         catch (HibernateException e)
         {
             if(tx!=null) tx.rollback();
+            System.out.println("There has been an error");
             e.printStackTrace();
         }
         finally
@@ -74,4 +88,17 @@ public class PostGRES_DataWriter implements DatabaseWriter
             //System.out.println("session closed");
         }
     }
+
+    private static XMLGregorianCalendar dateTimeToXMLGregorianCalendar(DateTime dateTime) {
+        XMLGregorianCalendar xmlGregorianCalendar = null;
+        try {
+            DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
+            xmlGregorianCalendar = dataTypeFactory.newXMLGregorianCalendar(dateTime.toGregorianCalendar());
+        }
+        catch (Exception e) {
+            System.out.println("Exception in conversion of DateTime to XMLGregorianCalendar" + e);
+        }
+        return xmlGregorianCalendar;
+    }
+
 }
